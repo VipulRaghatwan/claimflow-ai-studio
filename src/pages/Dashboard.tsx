@@ -42,7 +42,7 @@ const recentClaims = [
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
   { icon: FileText, label: "Claims", to: "/upload" },
-  { icon: BarChart3, label: "Analytics", to: "/dashboard" },
+  { icon: BarChart3, label: "Analytics", to: "/analytics" },
   { icon: Settings, label: "Settings", to: "/dashboard" },
 ];
 
