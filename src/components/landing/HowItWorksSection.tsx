@@ -28,10 +28,10 @@ const HowItWorksSection = () => {
       <div className="container mx-auto px-4">
         <motion.div
           className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
         >
           <h2 className="text-3xl md:text-5xl font-bold font-display mb-4">
             Three Steps to <span className="gradient-text">Automation</span>

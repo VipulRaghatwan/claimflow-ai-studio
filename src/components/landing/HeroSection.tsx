@@ -78,9 +78,10 @@ const HeroSection = () => {
         {/* Floating dashboard preview */}
         <motion.div
           className="mt-20 glass rounded-2xl p-1 max-w-5xl mx-auto"
-          initial={{ opacity: 0, y: 60 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.6 }}
+          initial={{ opacity: 0, y: 80, scale: 0.92 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.9, ease: "easeOut" }}
         >
           <div className="bg-card rounded-xl p-4 md:p-8">
             <div className="flex items-center gap-2 mb-6">
@@ -95,13 +96,20 @@ const HeroSection = () => {
                 { label: "Avg. Resolution", value: "12.3 days", color: "from-accent to-pink-500" },
                 { label: "Claims Paid", value: "$4.7M", color: "from-cyan to-primary" },
                 { label: "Fraud Detected", value: "37", color: "from-warning to-destructive" },
-              ].map((stat) => (
-                <div key={stat.label} className="glass-subtle rounded-xl p-4">
+              ].map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  className="glass-subtle rounded-xl p-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
+                >
                   <div className={`text-2xl md:text-3xl font-bold font-display bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
                     {stat.value}
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">{stat.label}</div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>

@@ -1,8 +1,15 @@
+import { motion } from "framer-motion";
 import { Zap } from "lucide-react";
 
 const FooterSection = () => {
   return (
-    <footer className="border-t border-border py-12">
+    <motion.footer
+      className="border-t border-border py-12"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6 }}
+    >
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
@@ -20,7 +27,7 @@ const FooterSection = () => {
           <p className="text-sm text-muted-foreground">© 2026 ClaimFlow AI. All rights reserved.</p>
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 };
 
