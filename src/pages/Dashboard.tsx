@@ -55,6 +55,7 @@ const statusColor: Record<string, string> = {
 };
 
 const Dashboard = () => {
+  const { signOut } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
