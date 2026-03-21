@@ -52,10 +52,10 @@ const FeaturesSection = () => {
             <motion.div
               key={feature.title}
               className="glass hover-lift p-6 group cursor-default"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              initial={{ opacity: 0, y: 40, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.5, delay: index * 0.12, ease: "easeOut" }}
             >
               <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4`}>
                 <feature.icon className="h-6 w-6 text-primary-foreground" />
