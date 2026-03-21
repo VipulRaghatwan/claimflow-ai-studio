@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, FileText, BarChart3, Settings, Search, Bell, User,
-  TrendingUp, TrendingDown, Clock, DollarSign, ShieldAlert, Zap, Menu, X
+  TrendingUp, TrendingDown, Clock, DollarSign, ShieldAlert, Zap, Menu, X, LogOut
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

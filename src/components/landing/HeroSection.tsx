@@ -63,7 +63,7 @@ const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.45 }}
         >
-          <Link to="/dashboard">
+          <Link to="/auth">
             <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg rounded-2xl glow-blue">
               Get Started <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
