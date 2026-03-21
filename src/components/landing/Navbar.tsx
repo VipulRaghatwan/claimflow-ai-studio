@@ -24,7 +24,10 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <Link to="/dashboard">
+          <Link to="/auth">
+            <Button size="sm" variant="ghost" className="rounded-xl">Sign In</Button>
+          </Link>
+          <Link to="/auth">
             <Button size="sm" className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90">
               Get Started
             </Button>

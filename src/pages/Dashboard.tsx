@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, FileText, BarChart3, Settings, Search, Bell, User,
-  TrendingUp, TrendingDown, Clock, DollarSign, ShieldAlert, Zap, Menu, X
+  TrendingUp, TrendingDown, Clock, DollarSign, ShieldAlert, Zap, Menu, X, LogOut
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -54,6 +55,7 @@ const statusColor: Record<string, string> = {
 };
 
 const Dashboard = () => {
+  const { signOut } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
@@ -84,6 +86,15 @@ const Dashboard = () => {
             </Link>
           ))}
         </nav>
+        <div className="mt-auto p-4 border-t border-border">
+          <button
+            onClick={signOut}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors w-full"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign Out
+          </button>
+        </div>
       </aside>
 
       {sidebarOpen && <div className="fixed inset-0 bg-background/60 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />}
