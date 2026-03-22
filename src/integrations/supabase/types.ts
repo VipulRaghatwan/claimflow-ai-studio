@@ -14,7 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      claim_files: {
+        Row: {
+          claim_id: string
+          created_at: string
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type: string
+          id: string
+        }
+        Insert: {
+          claim_id: string
+          created_at?: string
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type: string
+          id?: string
+        }
+        Update: {
+          claim_id?: string
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          file_type?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claim_files_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      claims: {
+        Row: {
+          ai_recommendation: string | null
+          ai_report: string | null
+          claim_number: string
+          confidence_score: number | null
+          cost_breakdown: Json | null
+          created_at: string
+          damage_description: string | null
+          damage_severity: string | null
+          estimated_cost: number | null
+          fraud_details: string | null
+          fraud_risk: string | null
+          id: string
+          ocr_extracted_data: Json | null
+          processing_time_ms: number | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_recommendation?: string | null
+          ai_report?: string | null
+          claim_number: string
+          confidence_score?: number | null
+          cost_breakdown?: Json | null
+          created_at?: string
+          damage_description?: string | null
+          damage_severity?: string | null
+          estimated_cost?: number | null
+          fraud_details?: string | null
+          fraud_risk?: string | null
+          id?: string
+          ocr_extracted_data?: Json | null
+          processing_time_ms?: number | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_recommendation?: string | null
+          ai_report?: string | null
+          claim_number?: string
+          confidence_score?: number | null
+          cost_breakdown?: Json | null
+          created_at?: string
+          damage_description?: string | null
+          damage_severity?: string | null
+          estimated_cost?: number | null
+          fraud_details?: string | null
+          fraud_risk?: string | null
+          id?: string
+          ocr_extracted_data?: Json | null
+          processing_time_ms?: number | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
