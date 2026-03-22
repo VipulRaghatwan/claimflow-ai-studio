@@ -63,7 +63,7 @@ const UploadPage = () => {
       // 1. Create claim record
       const { data: claim, error: claimError } = await supabase
         .from("claims")
-        .insert({ user_id: session.user.id })
+        .insert({ user_id: session.user.id, claim_number: 'temp' } as any)
         .select()
         .single();
 
