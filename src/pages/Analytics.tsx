@@ -22,7 +22,7 @@ import { toast } from "sonner";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
-  { icon: FileText, label: "Claims", to: "/upload" },
+  { icon: FileText, label: "Claims", to: "/claims" },
   { icon: BarChart3, label: "Analytics", to: "/analytics" },
   { icon: Settings, label: "Settings", to: "/dashboard" },
 ];
