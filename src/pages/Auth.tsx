@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Zap, Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Navigate } from "react-router-dom";
+import { lovable } from "@/integrations/lovable/index";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
