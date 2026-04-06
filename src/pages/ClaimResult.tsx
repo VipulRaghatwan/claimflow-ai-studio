@@ -35,6 +35,15 @@ interface Claim {
   ai_recommendation: string | null;
   processing_time_ms: number | null;
   created_at: string;
+  updated_at: string;
+}
+
+interface TimelineStep {
+  label: string;
+  icon: React.ElementType;
+  time: string | null;
+  active: boolean;
+  color: string;
 }
 
 const ClaimResult = () => {
