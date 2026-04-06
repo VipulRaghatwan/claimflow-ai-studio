@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, AlertTriangle, CheckCircle, Shield, FileText, DollarSign, Activity, Loader2, Eye, Brain } from "lucide-react";
+import { ArrowLeft, AlertTriangle, CheckCircle, Shield, FileText, DollarSign, Activity, Loader2, Eye, Brain, Clock, Upload, Cpu, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import Navbar from "@/components/landing/Navbar";
@@ -35,6 +35,15 @@ interface Claim {
   ai_recommendation: string | null;
   processing_time_ms: number | null;
   created_at: string;
+  updated_at: string;
+}
+
+interface TimelineStep {
+  label: string;
+  icon: React.ElementType;
+  time: string | null;
+  active: boolean;
+  color: string;
 }
 
 const ClaimResult = () => {
@@ -177,6 +186,88 @@ const ClaimResult = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* Status Timeline */}
+        <motion.div className="glass p-6 mb-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Clock className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold font-display">Status Timeline</h2>
+              <p className="text-xs text-muted-foreground">Track the lifecycle of this claim</p>
+            </div>
+          </div>
+          {(() => {
+            const steps: TimelineStep[] = [
+              {
+                label: "Submitted",
+                icon: Upload,
+                time: claim.created_at,
+                active: true,
+                color: "text-primary",
+              },
+              {
+                label: "Processing",
+                icon: Cpu,
+                time: claim.status !== "processing" ? claim.created_at : null,
+                active: ["processing", "analyzed", "approved", "denied"].includes(claim.status),
+                color: "text-warning",
+              },
+              {
+                label: "Analyzed",
+                icon: Brain,
+                time: ["analyzed", "approved", "denied"].includes(claim.status) ? claim.updated_at : null,
+                active: ["analyzed", "approved", "denied"].includes(claim.status),
+                color: "text-cyan",
+              },
+              ...(claim.status === "approved"
+                ? [{
+                    label: "Approved",
+                    icon: ThumbsUp,
+                    time: claim.updated_at,
+                    active: true,
+                    color: "text-success",
+                  }]
+                : claim.status === "denied"
+                ? [{
+                    label: "Denied",
+                    icon: ThumbsDown,
+                    time: claim.updated_at,
+                    active: true,
+                    color: "text-destructive",
+                  }]
+                : [{
+                    label: "Decision Pending",
+                    icon: Clock,
+                    time: null,
+                    active: false,
+                    color: "text-muted-foreground",
+                  }]),
+            ];
+            return (
+              <div className="relative flex items-start justify-between gap-2">
+                {/* connecting line */}
+                <div className="absolute top-5 left-0 right-0 h-0.5 bg-border z-0" />
+                {steps.map((step, i) => (
+                  <div key={step.label} className="relative z-10 flex flex-col items-center text-center flex-1">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      step.active ? "glass border-2 border-current " + step.color : "bg-muted/30 text-muted-foreground"
+                    }`}>
+                      <step.icon className="h-4 w-4" />
+                    </div>
+                    <span className={`text-xs font-semibold mt-2 ${step.active ? "text-foreground" : "text-muted-foreground"}`}>
+                      {step.label}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">
+                      {step.time ? new Date(step.time).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "—"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+        </motion.div>
 
         {/* OCR Extracted Data */}
         {Object.values(ocrData).some(Boolean) && (
