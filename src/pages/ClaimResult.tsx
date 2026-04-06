@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, AlertTriangle, CheckCircle, Shield, FileText, DollarSign, Activity, Loader2, Eye, Brain } from "lucide-react";
+import { ArrowLeft, AlertTriangle, CheckCircle, Shield, FileText, DollarSign, Activity, Loader2, Eye, Brain, Clock, Upload, Cpu, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import Navbar from "@/components/landing/Navbar";
