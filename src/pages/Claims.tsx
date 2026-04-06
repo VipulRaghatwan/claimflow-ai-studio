@@ -29,8 +29,8 @@ const navItems = [
 
 const statusColor: Record<string, string> = {
   processing: "bg-warning/20 text-warning",
-  analyzed: "bg-success/20 text-success",
-  approved: "bg-primary/20 text-primary",
+  analyzed: "bg-primary/20 text-primary",
+  approved: "bg-success/20 text-success",
   denied: "bg-destructive/20 text-destructive",
 };
 

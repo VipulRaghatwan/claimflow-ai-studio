@@ -41,6 +41,23 @@ const ClaimResult = () => {
   const { id } = useParams<{ id: string }>();
   const [claim, setClaim] = useState<Claim | null>(null);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+
+  const handleStatusChange = async (newStatus: "approved" | "denied") => {
+    if (!id || !claim) return;
+    setUpdating(true);
+    const { error } = await supabase
+      .from("claims")
+      .update({ status: newStatus, updated_at: new Date().toISOString() })
+      .eq("id", id);
+    if (error) {
+      toast.error("Failed to update claim status");
+    } else {
+      setClaim({ ...claim, status: newStatus });
+      toast.success(`Claim ${newStatus} successfully`);
+    }
+    setUpdating(false);
+  };
 
   useEffect(() => {
     const fetchClaim = async () => {
@@ -272,13 +289,48 @@ const ClaimResult = () => {
           </div>
         </motion.div>
 
+        {/* Status Banner */}
+        {(claim.status === "approved" || claim.status === "denied") && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`glass p-4 mb-6 flex items-center gap-3 border-l-4 ${
+              claim.status === "approved" ? "border-l-success" : "border-l-destructive"
+            }`}
+          >
+            {claim.status === "approved" ? (
+              <CheckCircle className="h-5 w-5 text-success" />
+            ) : (
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+            )}
+            <span className="font-semibold capitalize">{claim.status}</span>
+            <span className="text-sm text-muted-foreground">
+              — Updated {new Date(claim.created_at).toLocaleDateString()}
+            </span>
+          </motion.div>
+        )}
+
         <div className="flex flex-col sm:flex-row gap-3">
-          <Button className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 flex-1">
-            Approve Claim
-          </Button>
-          <Button variant="outline" className="rounded-xl border-glass-border text-foreground hover:bg-secondary flex-1">
-            Request Review
-          </Button>
+          {claim.status === "analyzed" && (
+            <>
+              <Button
+                onClick={() => handleStatusChange("approved")}
+                disabled={updating}
+                className="rounded-xl bg-success text-success-foreground hover:bg-success/90 flex-1"
+              >
+                {updating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <CheckCircle className="h-4 w-4 mr-2" />}
+                Approve Claim
+              </Button>
+              <Button
+                onClick={() => handleStatusChange("denied")}
+                disabled={updating}
+                className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90 flex-1"
+              >
+                {updating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <AlertTriangle className="h-4 w-4 mr-2" />}
+                Deny Claim
+              </Button>
+            </>
+          )}
           <Link to="/upload" className="flex-1">
             <Button variant="outline" className="rounded-xl border-glass-border text-foreground hover:bg-secondary w-full">
               New Claim
