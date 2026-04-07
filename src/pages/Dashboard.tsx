@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, FileText, BarChart3, Settings, Search, Bell, User,
-  TrendingUp, TrendingDown, Clock, DollarSign, ShieldAlert, Zap, Menu, X, LogOut
+  TrendingUp, TrendingDown, Clock, DollarSign, ShieldAlert, Zap, Menu, X, LogOut, ScanLine
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -43,6 +43,7 @@ const recentClaims = [
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
   { icon: FileText, label: "Claims", to: "/claims" },
+  { icon: ScanLine, label: "OCR Scanner", to: "/ocr-scanner" },
   { icon: BarChart3, label: "Analytics", to: "/analytics" },
   { icon: Settings, label: "Settings", to: "/dashboard" },
 ];
