@@ -7,6 +7,23 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+async function fetchFileAsBase64(url: string): Promise<string> {
+  const resp = await fetch(url);
+  const buf = await resp.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  let binary = "";
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
+function getMimeType(fileType: string): string {
+  if (fileType.startsWith("image/")) return fileType;
+  if (fileType === "application/pdf") return "application/pdf";
+  return "application/octet-stream";
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -23,7 +40,6 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get claim files
     const { data: files, error: filesError } = await supabase
       .from("claim_files")
       .select("*")
@@ -32,42 +48,52 @@ serve(async (req) => {
     if (filesError) throw new Error(`Failed to fetch files: ${filesError.message}`);
     if (!files || files.length === 0) throw new Error("No files found for this claim");
 
-    // Get signed URLs for files
-    const fileDetails = [];
+    // Build multimodal content with actual file data
+    const contentParts: any[] = [];
+
+    contentParts.push({
+      type: "text",
+      text: `You are an expert insurance claims analyst AI. Analyze the following ${files.length} uploaded file(s) and provide a comprehensive assessment.
+
+Look at every image carefully. For documents, extract all text via OCR. Consider:
+1. Damage severity assessment (minor/moderate/severe/total-loss)
+2. Detailed damage description from what you SEE in the images
+3. Estimated repair cost with breakdown based on visible damage
+4. Fraud risk assessment (low/medium/high) - check consistency between images and any text
+5. Extract all text from documents (OCR): vehicle info, dates, policy numbers, amounts
+6. A professional recommendation`,
+    });
+
+    // Fetch each file and add as image content
     for (const file of files) {
       const { data: signedUrl } = await supabase.storage
         .from("claim-files")
         .createSignedUrl(file.file_path, 3600);
 
-      if (signedUrl) {
-        fileDetails.push({
-          name: file.file_name,
-          type: file.file_type,
-          url: signedUrl.signedUrl,
-          size: file.file_size,
+      if (!signedUrl) continue;
+
+      const mime = getMimeType(file.file_type);
+
+      if (mime.startsWith("image/")) {
+        const base64 = await fetchFileAsBase64(signedUrl.signedUrl);
+        contentParts.push({
+          type: "image_url",
+          image_url: {
+            url: `data:${mime};base64,${base64}`,
+          },
+        });
+        contentParts.push({
+          type: "text",
+          text: `[Above image: ${file.file_name}]`,
+        });
+      } else if (mime === "application/pdf") {
+        // For PDFs, send the URL for the model to process
+        contentParts.push({
+          type: "text",
+          text: `[PDF document: ${file.file_name} - URL: ${signedUrl.signedUrl}]`,
         });
       }
     }
-
-    const imageFiles = fileDetails.filter((f) => f.type.startsWith("image"));
-    const docFiles = fileDetails.filter((f) => !f.type.startsWith("image"));
-
-    // Build the analysis prompt
-    const prompt = `You are an expert insurance claims analyst AI. Analyze the following claim submission and provide a comprehensive assessment.
-
-The claim has ${files.length} file(s) uploaded:
-- ${imageFiles.length} image(s): ${imageFiles.map((f) => f.name).join(", ") || "none"}
-- ${docFiles.length} document(s): ${docFiles.map((f) => f.name).join(", ") || "none"}
-
-Based on these files, provide a detailed analysis using the tool provided. Consider:
-1. Damage severity assessment (minor/moderate/severe/total-loss)
-2. Detailed damage description
-3. Estimated repair cost with breakdown
-4. Fraud risk assessment (low/medium/high)
-5. Any OCR data you can extract from document names and types
-6. A professional recommendation
-
-For the cost breakdown, provide realistic estimates for an insurance claim. Consider typical repair costs for the type of damage described by the file names.`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -76,13 +102,16 @@ For the cost breakdown, provide realistic estimates for an insurance claim. Cons
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash",
         messages: [
           {
             role: "system",
-            content: "You are an expert insurance claims analyst. Provide thorough, professional analysis.",
+            content: "You are an expert insurance claims analyst. Analyze uploaded images and documents thoroughly. Extract real text from documents using OCR. Assess damage from actual image content.",
           },
-          { role: "user", content: prompt },
+          {
+            role: "user",
+            content: contentParts,
+          },
         ],
         tools: [
           {
@@ -99,7 +128,7 @@ For the cost breakdown, provide realistic estimates for an insurance claim. Cons
                   },
                   damage_description: {
                     type: "string",
-                    description: "Detailed description of the damage detected",
+                    description: "Detailed description of the damage detected from the actual images",
                   },
                   estimated_cost: {
                     type: "number",
@@ -135,11 +164,14 @@ For the cost breakdown, provide realistic estimates for an insurance claim. Cons
                       date_of_incident: { type: "string" },
                       policy_number: { type: "string" },
                       additional_notes: { type: "string" },
+                      name: { type: "string" },
+                      amount: { type: "string" },
+                      raw_text: { type: "string" },
                     },
                   },
                   report: {
                     type: "string",
-                    description: "Full AI-generated professional report with sections for Damage Assessment, Cost Breakdown, Fraud Analysis, and Recommendation",
+                    description: "Full AI-generated professional report",
                   },
                   recommendation: {
                     type: "string",
@@ -191,7 +223,6 @@ For the cost breakdown, provide realistic estimates for an insurance claim. Cons
     const analysis = JSON.parse(toolCall.function.arguments);
     const processingTime = Date.now() - startTime;
 
-    // Update claim with analysis results
     const { error: updateError } = await supabase
       .from("claims")
       .update({

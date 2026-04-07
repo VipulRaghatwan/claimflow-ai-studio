@@ -12,6 +12,7 @@ import Analytics from "./pages/Analytics.tsx";
 import Upload from "./pages/Upload.tsx";
 import ClaimResult from "./pages/ClaimResult.tsx";
 import Claims from "./pages/Claims.tsx";
+import OcrScanner from "./pages/OcrScanner.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/upload" element={<ProtectedRoute><Upload /></ProtectedRoute>} />
             <Route path="/claim-result/:id" element={<ProtectedRoute><ClaimResult /></ProtectedRoute>} />
             <Route path="/claims" element={<ProtectedRoute><Claims /></ProtectedRoute>} />
+            <Route path="/ocr-scanner" element={<ProtectedRoute><OcrScanner /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
